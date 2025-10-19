@@ -5,8 +5,8 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <SDL3/SDL.h>
+// #include <SDL3_image/SDL_image.h>
 
 #include "draw/imgui_windows/window_manager.h"
 #include "draw/imgui_windows/settings_window.h"

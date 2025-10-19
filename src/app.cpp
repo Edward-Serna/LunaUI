@@ -22,51 +22,61 @@ void app::InitializeWindows() const {
 	_imgui_window_manager->AddWindow<settings_window>("Settings");
 }
 
-bool app::start_renderer() {
-    // Setup SDL
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
-        printf("Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        return false;
-    }
+bool app::start_renderer()
+{
+	// Setup SDL
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
+		printf("Error: %s\n", SDL_GetError());
+		SDL_Quit();
+		return false;
+	}
 
 #if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100
-    const char* glsl_version = "#version 100";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	// GL ES 2.0 + GLSL 100
+	const char* glsl_version = "#version 100";
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #elif defined(__APPLE__)
-    // GL 3.2 Core + GLSL 150
-    const char* glsl_version = "#version 150";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	// GL 3.2 Core + GLSL 150
+	const char* glsl_version = "#version 150";
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #else
-    // Decide GL+GLSL versions
-    // GL 3.0 + GLSL 130
-    const char *glsl_version = "#version 130";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	// Decide GL+GLSL versions
+	// GL 3.0 + GLSL 130
+	const char *glsl_version = "#version 130";
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
 
-    // Create a window with graphics context
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	// Create a window with graphics context
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    SDL_WindowFlags sdl_window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_INPUT_FOCUS;
-    _window = SDL_CreateWindow("Summer 2025", 600, 900, sdl_window_flags);
+	SDL_WindowFlags sdl_window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_INPUT_FOCUS;
+	_window = SDL_CreateWindow("Summer 2025", 600, 900, sdl_window_flags);
+	if (_window == nullptr) {
+		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
+		SDL_Quit();
+		return false;
+	}
 
-    if (_window == nullptr) {
-        printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
-        SDL_Quit();
-        return false;
-    }
+	// SDL_Surface* icon = IMG_Load("resources/images/my_icon.png");
+	// if (icon == nullptr)
+	// {
+	// 	printf("Error: SDL_LoadBMP(): %s\n", SDL_GetError());
+	// }
+	// else {
+	// 	SDL_SetWindowIcon(_window, icon);
+	// 	SDL_DestroySurface(icon);
+	// }
 
     if (!SDL_MaximizeWindow(_window)) {
         printf("Can NOT Maximize: %s\n", SDL_GetError());
@@ -100,7 +110,7 @@ bool app::start_renderer() {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Load Fonts
-    ImFont* font = io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 18.0f);
+    ImFont* font = io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 15.0f);
     if (font == nullptr) {
         io.Fonts->AddFontDefault();
     }
@@ -112,9 +122,9 @@ bool app::start_renderer() {
 
 void app::render_loop() const {
     ImGuiIO &io = ImGui::GetIO(); // Main configuration and I/O between your application and ImGui (also see: ImGuiPlatformIO)
-    ImVec4 bgColor = ImVec4(0.30f, 0.35f, 0.4f, 1.00f);// Background Color
+    ImVec4 bgColor = ImVec4(0.15f, 0.15f,  0.15f, 1.00f);// Background Color
 
-	bool show_demo_window = false;
+	bool show_demo_window = true;
 	bool menu_visibility_toggled = true;
 	bool done = false;
 
@@ -132,7 +142,7 @@ void app::render_loop() const {
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
-    	io.FontGlobalScale = std::max(0.85f, io.DisplaySize.y / 1080.0f);
+    	io.FontGlobalScale = std::max(1.0f, io.DisplaySize.y / 1080.0f);
 
     	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
@@ -155,7 +165,7 @@ void app::render_loop() const {
 
         ImGui::Render();
 
-        glViewport(0, 0, (int) io.DisplaySize.x, (int) io.DisplaySize.y);
+        glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
         glClearColor(bgColor.x * bgColor.w, bgColor.y * bgColor.w, bgColor.z * bgColor.w, bgColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -228,7 +238,7 @@ void app::SetupImGuiStyle() {
 	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.09803921729326248f, 0.09803921729326248f, 0.09803921729326248f, 1.0f);
 	style.Colors[ImGuiCol_ChildBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.0f);
 	style.Colors[ImGuiCol_PopupBg] = ImVec4(0.2231759428977966f, 0.2231737077236176f, 0.2231737077236176f, 1.0f);
-	style.Colors[ImGuiCol_Border] = ImVec4(0.540772557258606f, 0.6393193006515503f, 1.0f, 0.54935622215271f);
+	style.Colors[ImGuiCol_Border] = ImVec4(0.540772557258606f, 0.6393193006515503f, 1.0f, 0.24935622215271f);
 	style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.2618025541305542f, 0.2573080956935883f, 0.2573080956935883f, 1.0f);
 	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.3803921639919281f, 0.4235294163227081f, 0.572549045085907f, 0.5490196347236633f);
@@ -242,7 +252,7 @@ void app::SetupImGuiStyle() {
 	style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.553648054599762f, 0.5536425113677979f, 0.5536425113677979f, 1.0f);
 	style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.3433476686477661f, 0.3433442413806915f, 0.3433442413806915f, 1.0f);
 	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.7639485001564026f, 0.7639408707618713f, 0.7639408707618713f, 1.0f);
-	style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.4278951287269592f, 0.4881949424743652f, 0.8669527769088745f, 0.5490196347236633f);
+	style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.4278951287269592f, 0.4881949424743652f, 0.8669527769088745f, 0.9490196347236633f);
 	style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.4738344848155975f, 0.4778077006340027f, 0.9356223344802856f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_Button] = ImVec4(0.4434599578380585f, 0.5152584314346313f, 0.9656652212142944f, 0.54935622215271f);
 	style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.6333327293395996f, 0.7070270776748657f, 0.9399141669273376f, 0.5490196347236633f);
@@ -253,7 +263,7 @@ void app::SetupImGuiStyle() {
 	style.Colors[ImGuiCol_Separator] = ImVec4(0.6196078658103943f, 0.5764706134796143f, 0.7686274647712708f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.464182436466217f, 0.5383070111274719f, 0.7725322246551514f, 0.5793991088867188f);
 	style.Colors[ImGuiCol_SeparatorActive] = ImVec4(0.785744309425354f, 0.772549033164978f, 0.9647058844566345f, 0.5490196347236633f);
-	style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.5847176313400269f, 0.5764706134796143f, 0.7686274647712708f, 0.5490196347236633f);
+	style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.4372253715991974f, 0.3771481812000275f, 0.5021458864212036f, 0.1888412237167358f);
 	style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.6941176652908325f, 0.710611879825592f, 0.886274516582489f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.7758477926254272f, 0.772549033164978f, 0.9647058844566345f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_Tab] = ImVec4(0.5836910009384155f, 0.597984790802002f, 1.0f, 0.5490196347236633f);
@@ -276,5 +286,7 @@ void app::SetupImGuiStyle() {
 	style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.699999988079071f);
 	style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.4291845560073853f, 0.4291802644729614f, 0.4291802644729614f, 1.0f);
 	style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.03004294633865356f, 0.03004264459013939f, 0.03004264459013939f, 0.7424892783164978f);
+
+	style.Colors[ImGuiCol_DockingPreview] = ImVec4(0.4383944869041443f, 0.4559024572372437f, 0.729613721370697f, 1.0f);
 }
 

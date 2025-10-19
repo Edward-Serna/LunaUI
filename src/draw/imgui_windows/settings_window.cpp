@@ -5,16 +5,13 @@
 #include "settings_window.h"
 
 settings_window::settings_window()
-    : window_base("Settings", false, ImGuiWindowFlags_None)
-{
+    : window_base("Settings", false, ImGuiWindowFlags_None) {
     SetFlags(ImGuiWindowFlags_NoCollapse);
     ImGui::SetNextWindowSize(GetSize(), ImGuiCond_FirstUseEver);
 }
 
-void settings_window::draw_window()
-{
-    if ((ImGui::GetWindowPos().x !=  GetPosition().x) ||  (ImGui::GetWindowPos().y != GetPosition().y))
-    {
+void settings_window::draw_window() {
+    if ((ImGui::GetWindowPos().x !=  GetPosition().x) ||  (ImGui::GetWindowPos().y != GetPosition().y)) {
         SetPosition(ImGui::GetWindowPos());
         SetSize(ImVec2(200, 400));
         ImGui::GetWindowPos();

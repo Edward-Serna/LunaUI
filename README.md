@@ -5,7 +5,7 @@ pipelines, input handling, scene management, GUI integration, and more.
 
 ## Documentation
 * Standard DirectMedia Layer 3 (**SDL3**) [[here](https://wiki.libsdl.org/SDL3/FrontPage)]
-* **ImGui** Repository [[here](git@github.com:ocornut/imgui.git)]
+* **ImGui** Repository [[here](https://github.com/ocornut/imgui)]
 
 ## Pre-Requisites
 1. Download your IDE. (Our recommendation is [CLion](https://www.jetbrains.com/clion/download/#section=windows))

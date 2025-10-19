@@ -9,10 +9,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
 
 set(SDL_STATIC ON)
-set(SDL_SHARED OFF)  # Explicitly disable shared libraries
+set(SDL_SHARED OFF)
+
 add_subdirectory(thirdparty/sdl)
 
+#set(SDL3IMAGE_INSTALL OFF)
+#set(SDL3IMAGE_DEPS_SHARED OFF)
+#set(SDL3IMAGE_VENDORED ON)
+#set(SDL3IMAGE_BUILD_SHARED_LIBS OFF)
+
+#add_subdirectory(thirdparty/sdl_image)
+
 find_package(OpenGL REQUIRED)
+#find_package(SDL3_image REQUIRED)
 
 add_executable(summer2025
         src/main.cpp
@@ -35,6 +44,7 @@ add_executable(summer2025
 
 target_link_libraries(summer2025 PRIVATE
         SDL3::SDL3-static
+#        SDL3_image::SDL3_image-static
         ${OPENGL_LIBRARIES}
 )
 
@@ -44,6 +54,9 @@ target_include_directories(summer2025 PRIVATE
         ${PROJECT_SOURCE_DIR}/thirdparty/imgui
         ${PROJECT_SOURCE_DIR}/thirdparty/imgui/backends
         ${PROJECT_SOURCE_DIR}/thirdparty/sdl/include
+#        ${PROJECT_SOURCE_DIR}/thirdparty/sdl_image/include
+        ${PROJECT_SOURCE_DIR}/resources/images
+        ${PROJECT_SOURCE_DIR}/src/lib
 )
 
 configure_file(
