@@ -62,7 +62,7 @@ bool app::start_renderer()
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 	SDL_WindowFlags sdl_window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_INPUT_FOCUS;
-	_window = SDL_CreateWindow("LunaUI", 600, 900, sdl_window_flags);
+	_window = SDL_CreateWindow("LunaUI", 1300, 900, sdl_window_flags);
 	if (_window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		SDL_Quit();
@@ -71,9 +71,9 @@ bool app::start_renderer()
 
 	ImageUtil::SetWindowIcon(_window, "../../resources/images/my_icon.png");
 
-    if (!SDL_MaximizeWindow(_window)) {
-        printf("Can NOT Maximize: %s\n", SDL_GetError());
-    }
+    // if (!SDL_MaximizeWindow(_window)) {
+    //     printf("Can NOT Maximize: %s\n", SDL_GetError());
+    // }
 
     _gl_context = SDL_GL_CreateContext(_window);
     if (_gl_context == nullptr) {
@@ -84,7 +84,7 @@ bool app::start_renderer()
     }
 
     SDL_GL_MakeCurrent(_window, _gl_context);
-    SDL_GL_SetSwapInterval(1); // Enable vsync
+    SDL_GL_SetSwapInterval(0); // Enable vsync
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -94,6 +94,7 @@ bool app::start_renderer()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigDockingWithShift = true;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	SetupImGuiStyle();
@@ -116,8 +117,6 @@ void app::render_loop() const {
     ImGuiIO &io = ImGui::GetIO(); // Main configuration and I/O between your application and ImGui (also see: ImGuiPlatformIO)
     ImVec4 bgColor = ImVec4(0.15f, 0.15f,  0.15f, 1.00f);// Background Color
 
-	bool show_demo_window = true;
-	bool menu_visibility_toggled = true;
 	bool done = false;
 
     while (!done) {
@@ -138,9 +137,7 @@ void app::render_loop() const {
 
     	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
-        if (ImGui::IsKeyPressed(ImGuiKey_F10)) { menu_visibility_toggled = !menu_visibility_toggled; }
-
-    	if (menu_visibility_toggled) {
+    	if (true) {
     		if (ImGui::BeginMainMenuBar()) {
     			window_base* settings_window = _imgui_window_manager->GetWindow("Settings");
     			bool visible = settings_window->IsVisible();
