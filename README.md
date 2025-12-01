@@ -1,4 +1,4 @@
-# Summer 2025
+# LunaUI
 This project uses the **SDL3** for window initialization and input management, and **OpenGL3** for rendering API. Our 
 goal is to create our own application that implements the key systems for game development, such as rendering 
 pipelines, input handling, scene management, GUI integration, and more.
