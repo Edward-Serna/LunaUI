@@ -11,7 +11,7 @@ pipelines, input handling, scene management, GUI integration, and more.
 1. Download your IDE. (Our recommendation is [CLion](https://www.jetbrains.com/clion/download/#section=windows))
 2. Clone the repository to preferred path.
 ```bash
-    git clone git@github.com:Edward-Serna/summer2025.git
+    git clone git@github.com:Edward-Serna/LunaUI.git
 ```
 3. Enter the project. Then initialize and update the submodules.
 ```bash
@@ -21,4 +21,4 @@ pipelines, input handling, scene management, GUI integration, and more.
 ## Build
 1. Open the repository on CLion
 2. Reload the CMake Project
-3. Run/ Debug '**summer2025**'
+3. Run/ Debug '**LunaUI**'
