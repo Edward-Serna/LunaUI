@@ -7,9 +7,11 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
 
-#include <SDL3/SDL_opengl.h>
-#include "./../lib/image_util.h"
 #include <iostream>
+#include <SDL3/SDL_opengl.h>
+#include "../lib/image_util.h"
+#define NOTIFY_RENDER_OUTSIDE_MAIN_WINDOW false
+#include "../lib/external/ImGuiNotify.h"
 
 app::app() {
 	if (!start_renderer()) {
@@ -118,6 +120,7 @@ void app::render_loop() const {
     ImVec4 bgColor = ImVec4(0.15f, 0.15f,  0.15f, 1.00f);// Background Color
 
 	bool done = false;
+	bool menu_visibility_toggled = true;
 
     while (!done) {
         SDL_Event event;
@@ -136,8 +139,8 @@ void app::render_loop() const {
     	io.FontGlobalScale = std::max(1.0f, io.DisplaySize.y / 1080.0f);
 
     	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-
-    	if (true) {
+    	if (ImGui::IsKeyPressed(ImGuiKey_F10)) { menu_visibility_toggled = !menu_visibility_toggled; }
+    	if (menu_visibility_toggled) {
     		if (ImGui::BeginMainMenuBar()) {
     			window_base* settings_window = _imgui_window_manager->GetWindow("Settings");
     			bool visible = settings_window->IsVisible();
@@ -150,6 +153,7 @@ void app::render_loop() const {
 
     	_imgui_window_manager->RenderAll();
 
+    	example_notify();
     	// ImGui::ShowDemoWindow(&show_demo_window);
 
         ImGui::Render();
@@ -159,13 +163,15 @@ void app::render_loop() const {
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-            SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
-            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-        }
+    	// Update and Render additional Platform Windows (disabled - we're not using viewports)
+        // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        //     SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
+        //     SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+        //     ImGui::UpdatePlatformWindows();
+        //     ImGui::RenderPlatformWindowsDefault();
+        //     SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+        // }
+
         SDL_GL_SwapWindow(_window);
     }
 }
@@ -276,5 +282,92 @@ void app::SetupImGuiStyle() {
 	style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.03004294633865356f, 0.03004264459013939f, 0.03004264459013939f, 0.7424892783164978f);
 
 	style.Colors[ImGuiCol_DockingPreview] = ImVec4(0.4383944869041443f, 0.4559024572372437f, 0.729613721370697f, 1.0f);
+}
+
+void app::example_notify() {
+    	ImGui::SetNextWindowPos(ImVec2(50,70), ImGuiCond_Once);
+    	ImGui::SetNextWindowSize({550, 550}, ImGuiCond_Once);
+    	ImGui::Begin("ImGui Notify Test Window", nullptr, ImGuiWindowFlags_NoCollapse);
+
+	    if (ImGui::CollapsingHeader("Examples without title", ImGuiTreeNodeFlags_DefaultOpen))
+	    {
+	    	if (ImGui::Button("Success"))
+	    	{
+	    		ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
+	    	}
+	    	ImGui::SameLine();
+	    	if (ImGui::Button("Warning"))
+	    	{
+	    		ImGui::InsertNotification({ImGuiToastType::Warning, 3000, "This is a warning!"});
+	    	}
+	    	ImGui::SameLine();
+	    	if (ImGui::Button("Error"))
+	    	{
+	    		ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Segmentation fault"});
+	    	}
+	    	ImGui::SameLine();
+	    	if (ImGui::Button("Info"))
+	    	{
+	    		ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Info about ImGui..."});
+	    	}
+	    	ImGui::SameLine();
+	    	if (ImGui::Button("Info long"))
+	    	{
+	    		ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Hi, I'm a long notification. I'm here to show you that you can write a lot of text in me. I'm also here to show you that I can wrap text, so you don't have to worry about that."});
+	    	}
+            ImGui::SameLine();
+            if (ImGui::Button("Notify with button"))
+            {
+                ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Click me!", [](){ImGui::InsertNotification({ImGuiToastType::Success, 3000, "Thanks for clicking!"});}, "Notification content"});
+            }
+	    }
+	    if (ImGui::CollapsingHeader("Do it yourself", ImGuiTreeNodeFlags_DefaultOpen))
+	    {
+	    	static char title[4096] = "Hello there!";
+	    	ImGui::InputTextMultiline("Title", title, sizeof(title));
+
+	    	static char content[4096] = "General Kenobi! \n- Grevious";
+	    	ImGui::InputTextMultiline("Content", content, sizeof(content));
+
+	    	static int duration = 5000; // 5 seconds
+	    	ImGui::InputInt("Duration (ms)", &duration, 100);
+	    	if (duration < 0) duration = 0; // Shouldn't be negative
+
+	    	static const char* type_str[] = { "None", "Success", "Warning", "Error", "Info" };
+	    	static ImGuiToastType type = ImGuiToastType::Success;
+	    	IM_ASSERT(type < ImGuiToastType::COUNT);
+
+	    	if (ImGui::BeginCombo("Type", type_str[(uint8_t)type]))
+	    	{
+	    		for (auto n = 0; n < IM_ARRAYSIZE(type_str); n++)
+	    		{
+	    			const bool isSelected = ((uint8_t)type == n);
+	    			if (ImGui::Selectable(type_str[n], isSelected))
+                    {
+                        type = (ImGuiToastType)n;
+                    }
+	    			if (isSelected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+	    		}
+	    		ImGui::EndCombo();
+	    	}
+	    	static bool enable_title = true, enable_content = true;
+	    	ImGui::Checkbox("Enable title", &enable_title);
+	    	ImGui::SameLine();
+	    	ImGui::Checkbox("Enable content", &enable_content);
+	    	if (ImGui::Button("Show"))
+	    	{
+	    		ImGuiToast toast(type, duration);
+	    		if (enable_title)
+	    			toast.setTitle(title);
+	    		if (enable_content)
+	    			toast.setContent(content);
+	    		ImGui::InsertNotification(toast);
+	    	}
+	    }
+	    ImGui::End();
+    	ImGui::RenderNotifications();
 }
 

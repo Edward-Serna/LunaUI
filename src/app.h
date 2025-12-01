@@ -20,6 +20,7 @@ public:
 
 protected:
     static void SetupImGuiStyle();
+    static void example_notify();
 
 private:
     SDL_GLContext _gl_context = nullptr;
