@@ -8,6 +8,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include <SDL3/SDL_opengl.h>
+#include "./../lib/image_util.h"
 #include <iostream>
 
 app::app() {
@@ -61,22 +62,14 @@ bool app::start_renderer()
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 	SDL_WindowFlags sdl_window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_INPUT_FOCUS;
-	_window = SDL_CreateWindow("Summer 2025", 600, 900, sdl_window_flags);
+	_window = SDL_CreateWindow("LunaUI", 600, 900, sdl_window_flags);
 	if (_window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		SDL_Quit();
 		return false;
 	}
 
-	// SDL_Surface* icon = IMG_Load("resources/images/my_icon.png");
-	// if (icon == nullptr)
-	// {
-	// 	printf("Error: SDL_LoadBMP(): %s\n", SDL_GetError());
-	// }
-	// else {
-	// 	SDL_SetWindowIcon(_window, icon);
-	// 	SDL_DestroySurface(icon);
-	// }
+	ImageUtil::SetWindowIcon(_window, "../../resources/images/my_icon.png");
 
     if (!SDL_MaximizeWindow(_window)) {
         printf("Can NOT Maximize: %s\n", SDL_GetError());
@@ -110,13 +103,12 @@ bool app::start_renderer()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Load Fonts
-    ImFont* font = io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 15.0f);
+    ImFont* font = io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 18.0f);
     if (font == nullptr) {
         io.Fonts->AddFontDefault();
     }
     io.Fonts->Build();
 
-	std::cout << "Renderer Started!" << std::endl;
 	return true;
 }
 
@@ -161,7 +153,7 @@ void app::render_loop() const {
 
     	_imgui_window_manager->RenderAll();
 
-    	ImGui::ShowDemoWindow(&show_demo_window);
+    	// ImGui::ShowDemoWindow(&show_demo_window);
 
         ImGui::Render();
 
@@ -177,7 +169,6 @@ void app::render_loop() const {
             ImGui::RenderPlatformWindowsDefault();
             SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
         }
-
         SDL_GL_SwapWindow(_window);
     }
 }
