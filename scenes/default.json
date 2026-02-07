@@ -1,0 +1,56 @@
+{
+  "name": "default",
+  "nodes": {
+    "name": "Root",
+    "type": "Empty",
+    "transform": {
+      "position": [0.0, 0.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0, 1.0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "camera": null,
+    "mesh": null,
+    "orbit": null,
+    "children": [
+      {
+        "name": "Cube",
+        "type": "Mesh",
+        "transform": {
+          "position": [0.0, 0.0, 0.0],
+          "rotation": [0.0, 0.0, 0.0, 1.0],
+          "scale": [1.5, 1.5, 1.5]
+        },
+        "camera": null,
+        "mesh": {
+          "type": "Cube"
+        },
+        "orbit": null,
+        "children": []
+      },
+      {
+        "name": "MainCamera",
+        "type": "Camera",
+        "transform": {
+          "position": [0.0, 0.0, 5.0],
+          "rotation": [0.0, 0.0, 0.0, 1.0],
+          "scale": [1.0, 1.0, 1.0]
+        },
+        "camera": {
+          "fovDeg": 60.0,
+          "nearPlane": 0.1,
+          "farPlane": 1000.0
+        },
+        "mesh": null,
+        "orbit": {
+          "radius": 5.0,
+          "azimuth": 0.0,
+          "elevation": 0.4,
+          "target": [0.0, 0.0, 0.0],
+          "speed": 0.5,
+          "autoOrbit": true
+        },
+        "children": []
+      }
+    ]
+  }
+}
