@@ -33,14 +33,33 @@ jobs:
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
+          - os: ubuntu-latest 
+            c_compiler: clang
+            cpp_compiler: clang++
           - os: windows-latest
             c_compiler: clang
             cpp_compiler: clang++
+        exclude:
+          - os: ubuntu-latest  
+            c_compiler: cl
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: recursive 
+
+    - name: Install Linux dependencies  
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libx11-dev \
+          libxext-dev \
+          libwayland-dev \
+          libxkbcommon-dev \
+          libegl1-mesa-dev \
+          libgl1-mesa-dev
+          
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
