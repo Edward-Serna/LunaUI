@@ -3,10 +3,10 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <iostream>
+#include "shaders/shader.h"
 
-static const char *VERTEX_SHADER_SRC = R"GLSL(
+static const char* VERTEX_SHADER_SRC = R"GLSL(
 #version 330 core
 layout(location = 0) in vec3 aPosition;
 layout(location = 1) in vec3 aNormal;
@@ -31,7 +31,7 @@ void main() {
 }
 )GLSL";
 
-static const char *FRAGMENT_SHADER_SRC = R"GLSL(
+static const char* FRAGMENT_SHADER_SRC = R"GLSL(
 #version 330 core
 in vec3 vNormal;
 in vec3 vColor;
@@ -48,61 +48,10 @@ void main() {
 }
 )GLSL";
 
-
-// struct CubeVertex {
-//     float pos[3];
-//     float normal[3];
-//     float color[3];
-// };
-//
-// static const CubeVertex CUBE_VERTICES[24] = {
-//     // Front (+Z)
-//     {{0.5f, -0.5f, 0.5f}, {0, 0, 1}, {0.95f, 0.3f, 0.3f}},
-//     {{0.5f, 0.5f, 0.5f}, {0, 0, 1}, {0.95f, 0.3f, 0.3f}},
-//     {{-0.5f, 0.5f, 0.5f}, {0, 0, 1}, {0.95f, 0.3f, 0.3f}},
-//     {{-0.5f, -0.5f, 0.5f}, {0, 0, 1}, {0.95f, 0.3f, 0.3f}},
-//     // Back (-Z)
-//     {{-0.5f, -0.5f, -0.5f}, {0, 0, -1}, {0.3f, 0.3f, 0.95f}},
-//     {{-0.5f, 0.5f, -0.5f}, {0, 0, -1}, {0.3f, 0.3f, 0.95f}},
-//     {{0.5f, 0.5f, -0.5f}, {0, 0, -1}, {0.3f, 0.3f, 0.95f}},
-//     {{0.5f, -0.5f, -0.5f}, {0, 0, -1}, {0.3f, 0.3f, 0.95f}},
-//     // Top (+Y)
-//     {{-0.5f, 0.5f, -0.5f}, {0, 1, 0}, {0.3f, 0.95f, 0.3f}},
-//     {{-0.5f, 0.5f, 0.5f}, {0, 1, 0}, {0.3f, 0.95f, 0.3f}},
-//     {{0.5f, 0.5f, 0.5f}, {0, 1, 0}, {0.3f, 0.95f, 0.3f}},
-//     {{0.5f, 0.5f, -0.5f}, {0, 1, 0}, {0.3f, 0.95f, 0.3f}},
-//     // Bottom (-Y)
-//     {{-0.5f, -0.5f, 0.5f}, {0, -1, 0}, {0.95f, 0.85f, 0.2f}},
-//     {{-0.5f, -0.5f, -0.5f}, {0, -1, 0}, {0.95f, 0.85f, 0.2f}},
-//     {{0.5f, -0.5f, -0.5f}, {0, -1, 0}, {0.95f, 0.85f, 0.2f}},
-//     {{0.5f, -0.5f, 0.5f}, {0, -1, 0}, {0.95f, 0.85f, 0.2f}},
-//     // Right (+X)
-//     {{0.5f, -0.5f, -0.5f}, {1, 0, 0}, {0.95f, 0.55f, 0.2f}},
-//     {{0.5f, 0.5f, -0.5f}, {1, 0, 0}, {0.95f, 0.55f, 0.2f}},
-//     {{0.5f, 0.5f, 0.5f}, {1, 0, 0}, {0.95f, 0.55f, 0.2f}},
-//     {{0.5f, -0.5f, 0.5f}, {1, 0, 0}, {0.95f, 0.55f, 0.2f}},
-//     // Left (-X)
-//     {{-0.5f, -0.5f, 0.5f}, {-1, 0, 0}, {0.6f, 0.3f, 0.95f}},
-//     {{-0.5f, 0.5f, 0.5f}, {-1, 0, 0}, {0.6f, 0.3f, 0.95f}},
-//     {{-0.5f, 0.5f, -0.5f}, {-1, 0, 0}, {0.6f, 0.3f, 0.95f}},
-//     {{-0.5f, -0.5f, -0.5f}, {-1, 0, 0}, {0.6f, 0.3f, 0.95f}},
-// };
-
-
-static const unsigned short CUBE_INDICES[36] = {
-    0, 1, 2, 0, 2, 3,
-    4, 5, 6, 4, 6, 7,
-    8, 9, 10, 8, 10, 11,
-    12, 13, 14, 12, 14, 15,
-    16, 17, 18, 16, 18, 19,
-    20, 21, 22, 20, 22, 23
-};
-
-
 namespace sim {
-    bool Renderer::init(int width, int height, const std::string &title) {
-        m_width = width;
-        m_height = height;
+    bool Renderer::init( const int width, const int height, const std::string& title ) {
+        width_ = width;
+        height_ = height;
 
         // SDL3: SDL_Init returns true (non-zero) on success.
         if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -119,26 +68,25 @@ namespace sim {
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
         // SDL3: Create window WITH SDL_WINDOW_OPENGL flag (required!)
-        m_window = SDL_CreateWindow(
-            title.c_str(),
-            width, height,
-            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
-            // | SDL_WINDOW_MAXIMIZED
-        );
+        window_ = SDL_CreateWindow(title.c_str(),
+                                    width, height,
+                                    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
+                                    // | SDL_WINDOW_MAXIMIZED
+                                   );
 
-        if (!m_window) {
+        if (!window_) {
             std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << "\n";
             return false;
         }
 
         // Create OpenGL context
-        m_glCtx = SDL_GL_CreateContext(m_window);
-        if (!m_glCtx) {
+        glCtx_ = SDL_GL_CreateContext(window_);
+        if (!glCtx_) {
             std::cerr << "SDL_GL_CreateContext Error: " << SDL_GetError() << "\n";
             return false;
         }
 
-        SDL_GL_MakeCurrent(m_window, m_glCtx);
+        SDL_GL_MakeCurrent(window_, glCtx_);
 
         // Set swap interval (vsync)
         SDL_GL_SetSwapInterval(0);
@@ -165,125 +113,39 @@ namespace sim {
         // Set clear color (Background Color)
         glClearColor(0.12f, 0.14f, 0.28f, 1.0f);
 
-        // Compile shaders
-        if (!compileShaders()) {
-            std::cerr << "[Renderer] Failed to compile shaders\n";
-            return false;
-        }
 
-        // Upload geometry
-        // uploadCubeGeometry();
 
         return true;
     }
 
-    void Renderer::shutdown() {
-        glDeleteVertexArrays(1, &m_cubeVAO);
-        glDeleteBuffers(1, &m_cubeVBO);
-        glDeleteBuffers(1, &m_cubeEBO);
-        glDeleteProgram(m_shaderProgram);
+    void Renderer::shutdown() const {
 
-        SDL_GL_DestroyContext(m_glCtx);
-        SDL_DestroyWindow(m_window);
+        SDL_GL_DestroyContext(glCtx_);
+        SDL_DestroyWindow(window_);
         SDL_Quit();
     }
 
     bool Renderer::compileShaders() {
-        auto compile = [](const char *src, GLenum type) {
-            GLuint s = glCreateShader(type);
-            glShaderSource(s, 1, &src, nullptr);
-            glCompileShader(s);
-            return s;
-        };
-
-        GLuint vs = compile(VERTEX_SHADER_SRC, GL_VERTEX_SHADER);
-        GLuint fs = compile(FRAGMENT_SHADER_SRC, GL_FRAGMENT_SHADER);
-
-        m_shaderProgram = glCreateProgram();
-        glAttachShader(m_shaderProgram, vs);
-        glAttachShader(m_shaderProgram, fs);
-        glLinkProgram(m_shaderProgram);
-
-        glDeleteShader(vs);
-        glDeleteShader(fs);
-
-        m_uModel = glGetUniformLocation(m_shaderProgram, "uModel");
-        m_uView = glGetUniformLocation(m_shaderProgram, "uView");
-        m_uProjection = glGetUniformLocation(m_shaderProgram, "uProjection");
 
         return true;
     }
 
-    void Renderer::uploadCubeGeometry() {
-        glGenVertexArrays(1, &m_cubeVAO);
-        glBindVertexArray(m_cubeVAO);
 
-        glGenBuffers(1, &m_cubeVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, m_cubeVBO);
-        // glBufferData(GL_ARRAY_BUFFER,sizeof(CUBE_VERTICES),CUBE_VERTICES,GL_STATIC_DRAW);
-
-        glGenBuffers(1, &m_cubeEBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_cubeEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(CUBE_INDICES),CUBE_INDICES,GL_STATIC_DRAW);
-
-        // constexpr int stride = sizeof(CubeVertex);
-        // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void *) 0);
-        // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void *) (12));
-        // glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void *) (24));
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-
-        m_cubeIndexCount = 36;
-        glBindVertexArray(0);
-    }
-
-    void Renderer::render(const SceneNodePtr &scene,
-                          const SceneNodePtr &camera) {
-        glViewport(0, 0, m_width, m_height);
-        glClearColor(0.12f, 0.14f, 0.18f, 1.0f);
+    void Renderer::render() {
+        glViewport(0, 0, width_, height_);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        math::Vec3 camPos = camera->transform.position;
-        math::Vec3 target = camera->orbit
-                                ? camera->orbit->target
-                                : math::Vec3(0, 0, 0);
+        glUseProgram(ID_);
 
-        math::Mat4 view = glm::lookAt(camPos, target, {0, 1, 0});
-
-        math::Mat4 proj = glm::perspective(
-            glm::radians(camera->camera->fovDeg),
-            float(m_width) / float(m_height),
-            camera->camera->nearPlane,
-            camera->camera->farPlane
-        );
-
-        glUseProgram(m_shaderProgram);
-        glUniformMatrix4fv(m_uView, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(m_uProjection, 1, GL_FALSE, glm::value_ptr(proj));
-
-        drawNode(scene, math::Mat4(1.0f));
-        SDL_GL_SwapWindow(m_window);
+        SDL_GL_SwapWindow(window_);
     }
 
-    void Renderer::drawNode(const SceneNodePtr &node, const math::Mat4 &parentWorld) {
-        if (!node) return;
 
-        math::Mat4 world = parentWorld * node->transform.toMatrix();
 
-        if (node->type == NodeType::Mesh) {
-            glUniformMatrix4fv(m_uModel, 1, GL_FALSE, glm::value_ptr(world));
-            glBindVertexArray(m_cubeVAO);
-            glDrawElements(GL_TRIANGLES, m_cubeIndexCount, GL_UNSIGNED_SHORT, nullptr);
-        }
-
-        for (auto &child: node->children)
-            drawNode(child, world);
-    }
-
-    void Renderer::resize(int w, int h) {
-        m_width = w;
-        m_height = h;
-        glViewport(0, 0, w, h);
+    void Renderer::resize( const int width, const int height ) {
+        width_ = width;
+        height_ = height;
+        glViewport(0, 0, width, height);
     }
 }

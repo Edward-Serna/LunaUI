@@ -1,12 +1,11 @@
-#####################################################
-# SDL3
+## SDL3 ##
 if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/SDL/CMakeLists.txt")
     add_subdirectory(SDL EXCLUDE_FROM_ALL)
 else()
     message(FATAL_ERROR "SDL submodule not found. Run: git submodule update --init --recursive")
 endif()
-#####################################################
-# Assimp (with minimal features for OBJ loading)
+
+## Assimp (with minimal features for OBJ loading) ##
 if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/assimp/CMakeLists.txt")
     set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
@@ -20,8 +19,8 @@ else()
     message(WARNING "Assimp submodule not found. OBJ loading will be unavailable.
                     Run: git submodule update --init --recursive")
 endif()
-#####################################################
-# Check for GLAD (required for OpenGL loading)
+
+## Check for GLAD (required for OpenGL loading) ##
 if(NOT EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/glad/include/glad/glad.h")
     message(FATAL_ERROR "GLAD not found. Run: git submodule update --init --recursive")
 endif()

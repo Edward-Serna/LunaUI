@@ -4,11 +4,11 @@ add_library(core STATIC
     scene_node.cpp
     scene_serializer.h
     scene_serializer.cpp
-    orbit_camera.h
-    orbit_camera.cpp
     renderer.h
     renderer.cpp
 )
+
+include_directories(shaders)
 
 target_include_directories(core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -19,7 +19,7 @@ target_include_directories(core PUBLIC
     ${CMAKE_SOURCE_DIR}/thirdparty/json/include
     ${CMAKE_SOURCE_DIR}/thirdparty/fmt/include
 )
-#####################################################
+
 # Link SDL3
 if (TARGET SDL3::SDL3)
     target_link_libraries(core PUBLIC SDL3::SDL3)
@@ -28,10 +28,10 @@ elseif (TARGET SDL3)
 else()
     message(FATAL_ERROR "SDL3 target not found")
 endif()
-#####################################################
+
 # Link fmt
 target_link_libraries(core PUBLIC fmt::fmt)
-#####################################################
+
 # Link OpenGL
 if (WIN32)
     target_link_libraries(core PUBLIC opengl32)
@@ -41,7 +41,7 @@ else()
     find_package(OpenGL REQUIRED)
     target_link_libraries(core PUBLIC OpenGL::GL)
 endif()
-#####################################################
+
 # Add GLAD source
 target_sources(core PRIVATE
     ${CMAKE_SOURCE_DIR}/thirdparty/glad/src/glad.c

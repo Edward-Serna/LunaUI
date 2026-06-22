@@ -11,25 +11,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 message(STATUS "Building third-party libraries...")
-
 add_subdirectory(thirdparty)
 
-#####################################################
-# Copy the assets into the bin within assets/
-file(GLOB SCENE_FILES "${CMAKE_SOURCE_DIR}/scenes/*")
-if(SCENE_FILES)
-    file(COPY ${SCENE_FILES} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/scenes")
-endif()
-
-if(EXISTS "${CMAKE_SOURCE_DIR}/assets")
-    file(GLOB ASSET_FILES "${CMAKE_SOURCE_DIR}/assets/*")
-    if(ASSET_FILES)
-        file(COPY ${ASSET_FILES} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets")
-    endif()
-endif()
-
 add_subdirectory(core)
-add_subdirectory(loaders)
 add_subdirectory(src)
 
 message(STATUS "Build configuration complete! Run 'cmake --build .' to compile.")
