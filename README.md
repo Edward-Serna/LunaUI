@@ -45,7 +45,7 @@ make
 ```
 **_Running the Program_**
 ```bash
-.\bin\Debug\Simulator.exe -l .\bin\Debug\SDL3.dll  
+.\bin\Debug\Simulator.exe 
 ```
 _↑ This runs within .\build. Use_ `cd..` _to exit dir._
 
