@@ -1,61 +1,29 @@
 #include "renderer.h"
+#include "console.h"
 
+#include <filesystem>
 #include <glad/glad.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <iostream>
-#include "shaders/shader.h"
-
-static const char* VERTEX_SHADER_SRC = R"GLSL(
-#version 330 core
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec3 aNormal;
-layout(location = 2) in vec3 aColor;
-
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProjection;
-
-out vec3 vNormal;
-out vec3 vColor;
-out vec3 vWorldPos;
-
-void main() {
-    vec4 worldPos = uModel * vec4(aPosition, 1.0);
-    gl_Position   = uProjection * uView * worldPos;
-
-    mat3 normalMat = transpose(inverse(mat3(uModel)));
-    vNormal   = normalize(normalMat * aNormal);
-    vColor    = aColor;
-    vWorldPos = worldPos.xyz;
-}
-)GLSL";
-
-static const char* FRAGMENT_SHADER_SRC = R"GLSL(
-#version 330 core
-in vec3 vNormal;
-in vec3 vColor;
-
-out vec4 FragColor;
-
-void main() {
-    vec3 lightDir = normalize(vec3(1.0, 2.0, 1.0));
-    float diffuse = max(dot(vNormal, lightDir), 0.0);
-    float ambient = 0.25;
-
-    vec3 lit = vColor * (ambient + diffuse * 0.75);
-    FragColor = vec4(lit, 1.0);
-}
-)GLSL";
 
 namespace sim {
+    namespace {
+        const std::filesystem::path RendererSourceDirectory = std::filesystem::path(__FILE__).parent_path();
+        const std::filesystem::path ShaderDirectory = RendererSourceDirectory / "shaders";
+
+        constexpr std::string_view DefaultFragmentShaderFile = "default.shader.frag";
+        constexpr std::string_view DefaultVertexShaderFile = "default.shader.vert";
+
+        std::string shaderPath( const std::string_view shaderFileName ) {
+            return (ShaderDirectory / shaderFileName).string();
+        }
+    }
+
     bool Renderer::init( const int width, const int height, const std::string& title ) {
         width_ = width;
         height_ = height;
 
         // SDL3: SDL_Init returns true (non-zero) on success.
         if (!SDL_Init(SDL_INIT_VIDEO)) {
-            std::cerr << "SDL_Init Error: " << SDL_GetError() << "\n";
+            console::error("RENDERER", "SDL_Init failed: {}", SDL_GetError());
             return false;
         }
 
@@ -69,20 +37,20 @@ namespace sim {
 
         // SDL3: Create window WITH SDL_WINDOW_OPENGL flag (required!)
         window_ = SDL_CreateWindow(title.c_str(),
-                                    width, height,
-                                    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
-                                    // | SDL_WINDOW_MAXIMIZED
-                                   );
+                                   width, height,
+                                   SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
+                                   // | SDL_WINDOW_MAXIMIZED
+                                  );
 
         if (!window_) {
-            std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << "\n";
+            console::error("RENDERER", "SDL_CreateWindow failed: {}", SDL_GetError());
             return false;
         }
 
         // Create OpenGL context
         glCtx_ = SDL_GL_CreateContext(window_);
         if (!glCtx_) {
-            std::cerr << "SDL_GL_CreateContext Error: " << SDL_GetError() << "\n";
+            console::error("RENDERER", "SDL_GL_CreateContext failed: {}", SDL_GetError());
             return false;
         }
 
@@ -93,15 +61,15 @@ namespace sim {
 
         // Initialize GLAD immediately after context creation
         if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress))) {
-            std::cerr << "Failed to initialize GLAD\n";
+            console::error("RENDERER", "Failed to initialize GLAD.");
             return false;
         }
 
         // Debug: Print OpenGL info
-        std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << "\n";
-        std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
-        std::cout << "Renderer: " << glGetString(GL_RENDERER) << "\n";
-        std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+        console::debug("RENDERER", "OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+        console::debug("RENDERER", "GLSL Version: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+        console::debug("RENDERER", "Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+        console::debug("RENDERER", "Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
 
         // Enable depth testing
         glEnable(GL_DEPTH_TEST);
@@ -113,39 +81,59 @@ namespace sim {
         // Set clear color (Background Color)
         glClearColor(0.12f, 0.14f, 0.28f, 1.0f);
 
+        // set up vertex data (and buffer(s)) and configure vertex attributes
+        constexpr float vertices[] = {
+                // positions        // colors
+                0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
+                -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom left
+                0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top
+            };
 
+        glGenVertexArrays(1, &VAO_);
+        glGenBuffers(1, &VBO_);
+
+        // bind the Vertex Array Object first, then bind and set vertex buffer(s),
+        // and then configure vertex attributes(s).
+        glBindVertexArray(VAO_);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO_);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        const std::string vertexShaderPath = shaderPath(DefaultVertexShaderFile);
+        const std::string fragmentShaderPath = shaderPath(DefaultFragmentShaderFile);
+
+        console::debug("RENDERER", "Loading vertex shader: {}", vertexShaderPath);
+        console::debug("RENDERER", "Loading fragment shader: {}", fragmentShaderPath);
+
+        ourShader.emplace(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
         return true;
     }
-
-    void Renderer::shutdown() const {
-
-        SDL_GL_DestroyContext(glCtx_);
-        SDL_DestroyWindow(window_);
-        SDL_Quit();
-    }
-
-    bool Renderer::compileShaders() {
-
-        return true;
-    }
-
 
     void Renderer::render() {
-        glViewport(0, 0, width_, height_);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glUseProgram(ID_);
-
+        if (ourShader) ourShader->use();
+        glBindVertexArray(VAO_);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         SDL_GL_SwapWindow(window_);
     }
-
-
 
     void Renderer::resize( const int width, const int height ) {
         width_ = width;
         height_ = height;
         glViewport(0, 0, width, height);
+    }
+
+    void Renderer::shutdown() const {
+        SDL_GL_DestroyContext(glCtx_);
+        SDL_DestroyWindow(window_);
+        SDL_Quit();
     }
 }

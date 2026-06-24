@@ -1,7 +1,6 @@
 #pragma once
 
 #include "math_utils.h"
-
 #include <string>
 #include <vector>
 #include <memory>

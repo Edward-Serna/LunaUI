@@ -10,7 +10,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 namespace sim::math {
-    // ─── Constants ────────────────────────────────────────────────
+    // Constants //
     constexpr float PI     = 3.14159265358979323846f;
     constexpr float TAU    = 2.0f * PI;
     constexpr float DEG2RAD = PI / 180.0f;

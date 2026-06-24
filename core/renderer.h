@@ -1,42 +1,34 @@
 #pragma once
 
-#include "math_utils.h"
 #include <SDL3/SDL.h>
 #include <string>
+#include <optional>
+#include "shaders/shader.h"
 
 namespace sim {
     class Renderer {
     public:
         bool init(int width, int height, const std::string &title = "SDLSimulator");
-        void render();
+        Renderer() = default;
 
         SDL_Window *window() const { return window_; }
 
         /// Update the viewport after a window resize event.
         void resize(int width, int height);
-
+        void render();
         void shutdown() const;
 
-    private:
-        struct GLMesh {
-            unsigned int VAO = 0;
-            unsigned int VBO = 0;
-            unsigned int EBO = 0;
-            unsigned int indexCount = 0;
-            math::Vec3 boundsMin;
-            math::Vec3 boundsMax;
-        };
+        std::optional<Shader> ourShader;
 
-        std::unordered_map<std::string, GLMesh> m_loadedMeshes;
+    private:
+        unsigned int VAO_ = 0;
+        unsigned int VBO_ = 0;
+        // unsigned int EBO_ = 0;
 
         // SDL / GL state
         SDL_Window*   window_  = nullptr;
         SDL_GLContext glCtx_   = nullptr;
         int           width_   = 800;
         int           height_  = 600;
-
-        unsigned int ID_ = 0;
-
-        bool compileShaders();
     };
 }

@@ -41,22 +41,27 @@ cmake --build . --target Simulator -j 14
 ```bash
 mkdir build && cd build
 cmake ..
-make
+make 
 ```
 **_Running the Program_**
 ```bash
-.\build\bin\Simulator.exe -l .\bin\Debug\SDL3.dll
+.\bin\Debug\Simulator.exe -l .\bin\Debug\SDL3.dll  
 ```
+_↑ This runs within .\build. Use_ `cd..` _to exit dir._
 
 ### Third-Party Libraries
 With the third-party folder you can find external repositories that have been added via git submodules. The full list can be found in the .gitmodules file.
-- [Assimp](https://github.com/assimp/assimp)
-- [fmt](https://github.com/fmtlib/fmt)
-- [glad Branch-c](https://github.com/Dav1dde/glad/tree/c)
-- [glm](https://github.com/g-truc/glm)
-- [json](https://github.com/nlohmann/json)
-- [SDL3](https://github.com/libsdl-org/SDL)
+- [Assimp](https://github.com/assimp/assimp): Open **Asset Import** Library is a library that loads various 3D file 
+  formats into a shared, in-memory format. It supports more than 40 file formats for import and a growing selection of file formats for export.
+- [fmt](https://github.com/fmtlib/fmt): Is an open-source **formatting** library providing a fast and safe alternative 
+  to C stdio and C++ iostreams.
+- [glad Branch-c](https://github.com/Dav1dde/glad/tree/c): (**OpenGL Loader Generator**) is an open-source, 
+  multi-language library primarily used in C and C++ to manage and load OpenGL function pointers. Cross-Platform 
+  Compatibility.
+- [glm](https://github.com/g-truc/glm): **OpenGL Mathematics** is a header only C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specifications.
+- [json](https://github.com/nlohmann/json): JSON for Modern C++
+- [SDL3](https://github.com/libsdl-org/SDL): **Simple DirectMedia Layer** is a cross-platform library designed to make it easy to write multi-media software, such as games and emulators.
 
 ### Other Resources
-- [OpenGL](https://learnopengl.com/)
-- Standard DirectMedia Layer 3 ([SDL3](https://wiki.libsdl.org/SDL3/FrontPage))
+- [OpenGL](https://learnopengl.com/): (**Open Graphics Library**) is a cross-language, cross-platform programming interface (API) used for rendering 2D and 3D vector graphics. It serves as a universal translator, allowing software and game engines to directly communicate with a device's Graphics Processing Unit (GPU) to achieve hardware-accelerated rendering.
+- [SDL3](https://wiki.libsdl.org/SDL3/FrontPage): **Simple DirectMedia Layer** is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL/Direct3D/Metal/Vulkan. It is used by video playback software, emulators, and popular games including Valve's award winning catalog and many Humble Bundle games.
