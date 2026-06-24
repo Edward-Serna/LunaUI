@@ -1,10 +1,7 @@
 #pragma once
 
-#include "math_utils.h"
-#include <string>
-#include <vector>
+#include "utility/math.h"
 #include <memory>
-#include <optional>
 
 namespace sim {
     enum class NodeType {

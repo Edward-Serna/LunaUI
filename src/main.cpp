@@ -1,7 +1,6 @@
 #include "renderer.h"
-#include "scene_node.h"
 #include "scene_serializer.h"
-#include "console.h"
+#include "utility/console.h"
 
 #include <chrono>
 
@@ -25,11 +24,8 @@ int main() {
     console::info("MAIN", "Initializing renderer...");
 
     Renderer renderer;
-    if (!renderer.init(900, 700, "SDLSimulator")) {
+    if (!renderer.init(900, 700, "SDLSimulator"))
         console::error("MAIN", "Failed to initialize renderer.");
-        return 1;
-    }
-
     console::success("MAIN", "Renderer initialized successfully.");
 
     // Event loop

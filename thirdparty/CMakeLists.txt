@@ -27,5 +27,8 @@ endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/fmt/CMakeLists.txt")
     add_subdirectory(fmt EXCLUDE_FROM_ALL)
+else()
+message(WARNING "fmt submodule not found. OBJ loading will be unavailable.
+                    Run: git submodule update --init --recursive")
 endif()
 

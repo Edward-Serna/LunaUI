@@ -1,6 +1,5 @@
 #include "renderer.h"
-#include "console.h"
-
+#include "utility/console.h"
 #include <filesystem>
 #include <glad/glad.h>
 

@@ -76,7 +76,7 @@ namespace sim {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void Shader::checkCompileErrors( const unsigned int shader, const std::string& type ) const {
+    void Shader::checkCompileErrors( const unsigned int shader, const std::string& type ) {
         int success;
         char infoLog[1024];
         if (type != "PROGRAM") {

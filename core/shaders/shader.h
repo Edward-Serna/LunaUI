@@ -19,6 +19,6 @@ namespace sim {
         void setFloat(const std::string &name, float value) const;
     private:
         // utility function for checking shader compilation/linking errors.
-        void checkCompileErrors(unsigned int shader, const std::string& type) const;
+        static void checkCompileErrors(unsigned int shader, const std::string& type);
     };
 }

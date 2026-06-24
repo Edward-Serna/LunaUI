@@ -23,7 +23,6 @@ namespace sim {
     private:
         unsigned int VAO_ = 0;
         unsigned int VBO_ = 0;
-        // unsigned int EBO_ = 0;
 
         // SDL / GL state
         SDL_Window*   window_  = nullptr;

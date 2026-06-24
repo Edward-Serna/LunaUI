@@ -1,17 +1,16 @@
 add_library(core STATIC
-        math_utils.h
-        console.h
+        renderer.cpp
+        renderer.h
         scene_node.h
         scene_serializer.h
-        renderer.h
-        renderer.cpp
-        shaders/shader.h
+        utility/math.h
+        utility/console.h
         shaders/shader.cpp
+        shaders/shader.h
 )
 
 target_include_directories(core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/shaders
     ${CMAKE_SOURCE_DIR}/loaders
     ${CMAKE_SOURCE_DIR}/thirdparty/SDL/include
     ${CMAKE_SOURCE_DIR}/thirdparty/glad/include
