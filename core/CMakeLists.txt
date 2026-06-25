@@ -2,7 +2,6 @@ add_library(core STATIC
         renderer.cpp
         renderer.h
         scene_node.h
-        scene_serializer.h
         utility/math.h
         utility/console.h
         shaders/shader.cpp
@@ -11,12 +10,12 @@ add_library(core STATIC
 
 target_include_directories(core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/loaders
     ${CMAKE_SOURCE_DIR}/thirdparty/SDL/include
     ${CMAKE_SOURCE_DIR}/thirdparty/glad/include
     ${CMAKE_SOURCE_DIR}/thirdparty/glm
     ${CMAKE_SOURCE_DIR}/thirdparty/json/include
     ${CMAKE_SOURCE_DIR}/thirdparty/fmt/include
+    ${CMAKE_SOURCE_DIR}/thirdparty/SDL_image/include
 )
 
 # Link SDL3
@@ -27,6 +26,9 @@ elseif (TARGET SDL3)
 else()
     message(FATAL_ERROR "SDL3 target not found")
 endif()
+
+target_link_libraries(core PRIVATE SDL3_image::SDL3_image)
+
 
 # Link fmt
 target_link_libraries(core PUBLIC fmt::fmt)

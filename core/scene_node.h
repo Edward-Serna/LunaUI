@@ -32,7 +32,7 @@ namespace sim {
     };
 
     struct SceneNode; // Empty
-    using SceneNodePtr = std::shared_ptr<SceneNode>;
+    using SceneNodePtr = std::shared_ptr<SceneNode>; // Alias
     struct SceneNode {
         std::string name; // Identity
         NodeType type = NodeType::Empty;
@@ -53,34 +53,6 @@ namespace sim {
             children.push_back(child);
         }
 
-        /// Compute the world-space matrix by walking up the parent chain.
-        math::Mat4 worldMatrix() const {
-            math::Mat4 m = transform.toMatrix();
-            if (parent) {
-                m = parent->worldMatrix() * m;
-            }
-            return m;
-        }
-
-        /// Find the first child with the given name (non-recursive).
-        SceneNodePtr findChild( const std::string& childName ) const {
-            for (auto& c : children) {
-                if (c->name == childName) return c;
-            }
-            return nullptr;
-        }
-
-    private:
-        // We can't call shared_from_this() unless the node is already
-        // owned by a shared_ptr. This helper is safe to call from addChild
-        // because in practice we always construct nodes via make_shared.
-        // For safety, we fall back to nullptr if something goes wrong.
-        static SceneNodePtr shared_from_this_safe() {
-            // We intentionally do NOT inherit from enable_shared_from_this
-            // to keep things simple. The parent pointer is set externally.
-            // This method exists only as a placeholder comment reminder.
-            return nullptr; // parent is set by the caller of addChild
-        }
     };
 
     // Factory helpers

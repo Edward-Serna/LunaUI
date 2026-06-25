@@ -50,30 +50,31 @@ namespace sim {
         glShaderSource(fragment, 1, &fShaderCode, nullptr);
         glCompileShader(fragment);
         // shader Program
-        ID = glCreateProgram();
-        glAttachShader(ID, vertex);
-        glAttachShader(ID, fragment);
-        glLinkProgram(ID);
+        shader_ID = glCreateProgram();
+        // shader_ID = ID;
+        glAttachShader(shader_ID, vertex);
+        glAttachShader(shader_ID, fragment);
+        glLinkProgram(shader_ID);
         // delete the shaders as they're linked into our program now and no longer necessary
         glDeleteShader(vertex);
         glDeleteShader(fragment);
     }
 
     void Shader::use() const { // activate the shader
-        glUseProgram(ID);
+        glUseProgram(shader_ID);
     }
 
     // utility uniform functions
     void Shader::setBool( const std::string& name, const bool value ) const {
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), static_cast<int>(value));
+        glUniform1i(glGetUniformLocation(shader_ID, name.c_str()), static_cast<int>(value));
     }
 
     void Shader::setInt( const std::string& name, const int value ) const {
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+        glUniform1i(glGetUniformLocation(shader_ID, name.c_str()), value);
     }
 
     void Shader::setFloat( const std::string& name, const float value ) const {
-        glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+        glUniform1f(glGetUniformLocation(shader_ID, name.c_str()), value);
     }
 
     void Shader::checkCompileErrors( const unsigned int shader, const std::string& type ) {

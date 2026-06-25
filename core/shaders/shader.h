@@ -9,10 +9,11 @@
 namespace sim {
     class Shader {
     public:
-        unsigned int ID; // Program ID
+        unsigned int shader_ID; // Program ID
 
         // constructor reads and builds the shader
-        Shader       (const char* vertexPath, const char* fragmentPath);
+        Shader (const char* vertexPath, const char* fragmentPath);
+
         void use     () const; // use/activate the shader
         void setBool (const std::string &name, bool value) const;
         void setInt  (const std::string &name, int value) const;

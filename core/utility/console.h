@@ -33,45 +33,41 @@ namespace sim::console {
     inline void prefix( const std::string_view system, const Level level ) {
         timestamp();
         fmt::print(fmt::fg(fmt::color::white) |
-                   fmt::bg(fmt::color::dark_blue),
-                   " [{}] ", system
-                  );
+                   fmt::bg(fmt::color::dark_blue)," [{}] ", system);
         switch (level) {
         case Level::Info:
             fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::dodger_blue),
-                       " INFO "
-                      );
+                       fmt::bg(fmt::color::dodger_blue)," INFO ");
             break;
         case Level::Success:
             fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::forest_green),
-                       " OK "
-                      );
+                       fmt::bg(fmt::color::forest_green)," OK ");
             break;
         case Level::Warning:
             fmt::print(
                        fmt::fg(fmt::color::black) |
-                       fmt::bg(fmt::color::gold),
-                       " WARN "
-                      );
+                       fmt::bg(fmt::color::gold)," WARN ");
             break;
         case Level::Error:
             fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::fire_brick),
-                       " ERROR "
-                      );
+                       fmt::bg(fmt::color::fire_brick)," ERROR ");
             break;
         case Level::Debug:
             fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::slate_gray),
-                       " DEBUG "
-                      );
+                       fmt::bg(fmt::color::slate_gray)," DEBUG ");
             break;
         }
         fmt::print(" ");
     }
 
+    /**
+     *  Log: Prints 'prefix' then 'message'
+     * @tparam Args
+     * @param system 'Debug','Renderer', or `other..`
+     * @param level Info, Success, Warning, Error, Debug
+     * @param message String output
+     * @param args (Arbitrary/Privative value(s)) {} i.e.CurrentPath/
+     */
     template <typename... Args>
     void log( const std::string_view system, const Level level, fmt::format_string<Args...> message, Args&&... args ) {
         prefix(system, level);

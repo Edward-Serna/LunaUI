@@ -8,19 +8,18 @@
 namespace sim {
     class Renderer {
     public:
-        bool init(int width, int height, const std::string &title = "SDLSimulator");
-        Renderer() = default;
-
+        bool init(int width, int height, const std::string& title);
         SDL_Window *window() const { return window_; }
-
-        /// Update the viewport after a window resize event.
-        void resize(int width, int height);
-        void render();
+        void resize(int width, int height); // Update the viewport after a window resize event.
+        void reload(Renderer &renderer) const;
+        void renderer() const;
         void shutdown() const;
 
         std::optional<Shader> ourShader;
 
     private:
+        std::string title_ = "SDLSimulator";
+
         unsigned int VAO_ = 0;
         unsigned int VBO_ = 0;
 

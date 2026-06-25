@@ -50,7 +50,8 @@ make
 _↑ This runs within .\build. Use_ `cd..` _to exit dir._
 
 ### Third-Party Libraries
-With the third-party folder you can find external repositories that have been added via git submodules. The full list can be found in the .gitmodules file.
+With the third-party folder you can find external repositories that have been added via git submodules. The full 
+list can be found in the .gitmodules file. Following links are to GitHub Repositories:
 - [Assimp](https://github.com/assimp/assimp): Open **Asset Import** Library is a library that loads various 3D file 
   formats into a shared, in-memory format. It supports more than 40 file formats for import and a growing selection of file formats for export.
 - [fmt](https://github.com/fmtlib/fmt): Is an open-source **formatting** library providing a fast and safe alternative 
@@ -60,7 +61,10 @@ With the third-party folder you can find external repositories that have been ad
   Compatibility.
 - [glm](https://github.com/g-truc/glm): **OpenGL Mathematics** is a header only C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specifications.
 - [json](https://github.com/nlohmann/json): JSON for Modern C++
-- [SDL3](https://github.com/libsdl-org/SDL): **Simple DirectMedia Layer** is a cross-platform library designed to make it easy to write multi-media software, such as games and emulators.
+- [SDL3](https://github.com/libsdl-org/SDL): **Simple DirectMedia Layer** is a cross-platform library designed to 
+  make it easy to write multi-media software, such as games and emulators.
+- [SDL3 Image](https://github.com/libsdl-org/SDL_image.git): **Simple DirectMedia Layer - Image** This is a simple 
+    library to load images of various formats as SDL surfaces. It can load BMP, GIF, JPEG, LBM, PCX, PNG, PNM (PPM/PGM/PBM), QOI, TGA, XCF, XPM, and simple SVG format images. It can also load AVIF, JPEG-XL, TIFF, and WebP images, depending on optional libraries.
 
 ### Other Resources
 - [OpenGL](https://learnopengl.com/): (**Open Graphics Library**) is a cross-language, cross-platform programming interface (API) used for rendering 2D and 3D vector graphics. It serves as a universal translator, allowing software and game engines to directly communicate with a device's Graphics Processing Unit (GPU) to achieve hardware-accelerated rendering.

@@ -1,13 +1,13 @@
 #include "renderer.h"
-#include "utility/console.h"
+#include <utility/console.h>
 #include <filesystem>
 #include <glad/glad.h>
+#include <SDL3_image/SDL_image.h>
 
 namespace sim {
     namespace {
         const std::filesystem::path RendererSourceDirectory = std::filesystem::path(__FILE__).parent_path();
         const std::filesystem::path ShaderDirectory = RendererSourceDirectory / "shaders";
-
         constexpr std::string_view DefaultFragmentShaderFile = "default.shader.frag";
         constexpr std::string_view DefaultVertexShaderFile = "default.shader.vert";
 
@@ -16,7 +16,7 @@ namespace sim {
         }
     }
 
-    bool Renderer::init( const int width, const int height, const std::string& title ) {
+    bool Renderer::init(const int width, const int height, const std::string& title) {
         width_ = width;
         height_ = height;
 
@@ -46,6 +46,14 @@ namespace sim {
             return false;
         }
 
+
+        if (SDL_Surface* icon = IMG_Load("icon.png")) {
+            SDL_SetWindowIcon(window_, icon);
+            SDL_DestroySurface(icon); // Clean up the surface after assigning
+        } else {
+            // SDL_Log("Failed to load icon: %s", SDL_GetError());
+        }
+
         // Create OpenGL context
         glCtx_ = SDL_GL_CreateContext(window_);
         if (!glCtx_) {
@@ -55,8 +63,8 @@ namespace sim {
 
         SDL_GL_MakeCurrent(window_, glCtx_);
 
-        // Set swap interval (vsync)
-        SDL_GL_SetSwapInterval(0);
+        // Set swap interval (vsync) [0:OFF, 1:ON, -1:Adaptive]
+        SDL_GL_SetSwapInterval(1);
 
         // Initialize GLAD immediately after context creation
         if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress))) {
@@ -78,7 +86,7 @@ namespace sim {
         glViewport(0, 0, width, height);
 
         // Set clear color (Background Color)
-        glClearColor(0.12f, 0.14f, 0.28f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         constexpr float vertices[] = {
@@ -98,11 +106,11 @@ namespace sim {
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
         // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
         glEnableVertexAttribArray(0);
 
         // color attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
         const std::string vertexShaderPath = shaderPath(DefaultVertexShaderFile);
@@ -111,23 +119,30 @@ namespace sim {
         console::debug("RENDERER", "Loading vertex shader: {}", vertexShaderPath);
         console::debug("RENDERER", "Loading fragment shader: {}", fragmentShaderPath);
 
+        // Create Shader
+        // (Emplace) Constructs the contained value in-place. If *this already contains a
+        // value before the call, the contained value is destroyed by calling its destructor.
         ourShader.emplace(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
-
         return true;
     }
 
-    void Renderer::render() {
+    void Renderer::renderer() const {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (ourShader) ourShader->use();
         glBindVertexArray(VAO_);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        SDL_GL_SwapWindow(window_);
+        SDL_GL_SwapWindow(window_); // Sets gl rendering to SDL window
     }
 
     void Renderer::resize( const int width, const int height ) {
         width_ = width;
         height_ = height;
         glViewport(0, 0, width, height);
+    }
+
+    void Renderer::reload(Renderer &renderer) const {
+        shutdown();
+        renderer.init(width_, height_, title_);
     }
 
     void Renderer::shutdown() const {

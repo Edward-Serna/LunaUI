@@ -1,4 +1,3 @@
-# Main Application
 add_executable(Simulator main.cpp)
 
 target_include_directories(Simulator PRIVATE
