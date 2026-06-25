@@ -27,34 +27,35 @@ namespace sim::console {
         const auto now = std::chrono::system_clock::now();
         const auto time = std::chrono::system_clock::to_time_t(now);
         const auto local = localTime(time);
-        fmt::print("{:%Y-%m-%d %H:%M:%S} ", local);
+        fmt::print(fmt::fg(fmt::color::gray),"{:%Y-%m-%d %H:%M:%S} ", local);
     }
 
     inline void prefix( const std::string_view system, const Level level ) {
         timestamp();
-        fmt::print(fmt::fg(fmt::color::white) |
-                   fmt::bg(fmt::color::dark_blue)," [{}] ", system);
+        // fmt::print(fmt::emphasis::bold |  fmt::fg(fmt::color::dark_slate_gray) |
+        //            fmt::bg(fmt::color::dark_gray)," [{}] ", system);
+        fmt::print(fmt::emphasis::bold |  fmt::fg(fmt::color::light_gray),"[{}] ", system);
         switch (level) {
         case Level::Info:
             fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::dodger_blue)," INFO ");
+                       fmt::bg(fmt::color::midnight_blue)," INFO ");
             break;
         case Level::Success:
-            fmt::print(fmt::fg(fmt::color::white_smoke) |
+            fmt::print(fmt::fg(fmt::color::white_smoke) | fmt::emphasis::bold |
                        fmt::bg(fmt::color::forest_green)," OK ");
             break;
         case Level::Warning:
             fmt::print(
-                       fmt::fg(fmt::color::black) |
-                       fmt::bg(fmt::color::gold)," WARN ");
+                       fmt::fg(fmt::color::white_smoke) | fmt::emphasis::bold |
+                       fmt::bg(fmt::color::golden_rod)," WARN ");
             break;
         case Level::Error:
-            fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::fire_brick)," ERROR ");
+            fmt::print(fmt::fg(fmt::color::white_smoke) | fmt::emphasis::bold |
+                       fmt::bg(fmt::color::dark_red)," ERROR ");
             break;
         case Level::Debug:
             fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::slate_gray)," DEBUG ");
+                       fmt::bg(fmt::color::sea_green)," DEBUG ");
             break;
         }
         fmt::print(" ");

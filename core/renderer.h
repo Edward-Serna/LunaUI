@@ -12,6 +12,7 @@ namespace sim {
         SDL_Window *window() const { return window_; }
         void resize(int width, int height); // Update the viewport after a window resize event.
         void reload(Renderer &renderer) const;
+        void end() const;
         void renderer() const;
         void shutdown() const;
 

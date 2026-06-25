@@ -21,11 +21,10 @@ int main() {
     while (running) {
         frameCount++;
         if (Uint32 currentTime = SDL_GetTicks(); currentTime - startTime >= 1000) {
-            float fps = frameCount / ((currentTime - startTime) / 1000.0f);
+            unsigned int fps = frameCount / ((currentTime - startTime) / 1000.0f);
             console::debug("System", "FPS: {}", fps);
             frameCount = 0; // Reset counters
             startTime = currentTime;
-            // console::info("System", "Latency dt: {}", dt);
         }
 
         renderer.renderer();

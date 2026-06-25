@@ -34,12 +34,14 @@ namespace sim {
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-        // SDL3: Create window WITH SDL_WINDOW_OPENGL flag (required!)
-        window_ = SDL_CreateWindow(title.c_str(),
-                                   width, height,
-                                   SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
-                                   // | SDL_WINDOW_MAXIMIZED
-                                  );
+        if (!window_) {
+            // SDL3: Create window WITH SDL_WINDOW_OPENGL flag (required!)
+            window_ = SDL_CreateWindow(title.c_str(),
+                                       width, height,
+                                       SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
+                                       // | SDL_WINDOW_MAXIMIZED
+                                      );
+        }
 
         if (!window_) {
             console::error("RENDERER", "SDL_CreateWindow failed: {}", SDL_GetError());
@@ -65,19 +67,19 @@ namespace sim {
         SDL_GL_MakeCurrent(window_, glCtx_);
 
         // Set swap interval (vsync) [0:OFF, 1:ON, -1:Adaptive]
-        SDL_GL_SetSwapInterval(1);
+        SDL_GL_SetSwapInterval(0);
 
         // Initialize GLAD immediately after context creation
-        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress))) {
+        if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
             console::error("RENDERER", "Failed to initialize GLAD.");
             return false;
         }
 
         // Debug: Print OpenGL info
-        console::debug("RENDERER", "OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-        console::debug("RENDERER", "GLSL Version: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-        console::debug("RENDERER", "Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-        console::debug("RENDERER", "Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+        console::info("RENDERER", "OpenGL Version: {}", (char*)glGetString(GL_VERSION));
+        console::info("RENDERER", "GLSL Version: {}",  (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+        console::info("RENDERER", "Renderer: {}", (char*)glGetString(GL_RENDERER));
+        console::info("RENDERER", "Vendor: {}",(char*) glGetString(GL_VENDOR));
 
         // Enable depth testing
         glEnable(GL_DEPTH_TEST);
@@ -117,8 +119,8 @@ namespace sim {
         const std::string vertexShaderPath = shaderPath(DefaultVertexShaderFile);
         const std::string fragmentShaderPath = shaderPath(DefaultFragmentShaderFile);
 
-        console::debug("RENDERER", "Loading vertex shader: {}", vertexShaderPath);
-        console::debug("RENDERER", "Loading fragment shader: {}", fragmentShaderPath);
+        console::info("RENDERER", "Loading vertex shader: {}", vertexShaderPath);
+        console::info("RENDERER", "Loading fragment shader: {}", fragmentShaderPath);
 
         // Create Shader
         // (Emplace) Constructs the contained value in-place. If *this already contains a
@@ -127,7 +129,7 @@ namespace sim {
         return true;
     }
 
-    void Renderer::renderer() const {
+    void Renderer::renderer() const{
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (ourShader) ourShader->use();
         glBindVertexArray(VAO_);
@@ -142,8 +144,12 @@ namespace sim {
     }
 
     void Renderer::reload(Renderer &renderer) const {
-        shutdown();
+        end();
         renderer.init(width_, height_, title_);
+    }
+
+    void Renderer::end() const {
+        SDL_GL_DestroyContext(glCtx_);
     }
 
     void Renderer::shutdown() const {

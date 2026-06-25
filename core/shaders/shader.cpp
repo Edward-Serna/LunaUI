@@ -6,7 +6,7 @@
 #include "glad/glad.h"
 #include <fstream>
 #include <sstream>
-#include <iostream>
+#include <utility/console.h>
 
 namespace sim {
     // constructor generates the shader on the fly
@@ -35,7 +35,7 @@ namespace sim {
             fragmentCode = fShaderStream.str();
         }
         catch (std::ifstream::failure& e) {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+            console::error("RENDERER", "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: {}", e.what());
         }
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
@@ -84,16 +84,16 @@ namespace sim {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success) {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: "
-                           << type << "\n" << infoLog << "\n" << std::endl;
+                console::error("RENDERER", "ERROR::SHADER_COMPILATION_ERROR of type: {}", type);
+                console::error("RENDERER", "{}" ,infoLog);
             }
         }
         else {
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
             if (!success) {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: "
-                          << type << "\n" << infoLog << "\n" << std::endl;
+                console::error("RENDERER", "ERROR::PROGRAM_LINKING_ERROR of type: {}", type);
+                console::error("RENDERER", "{}" ,infoLog);
             }
         }
     }
