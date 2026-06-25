@@ -1,1 +1,4 @@
-..\build\bin\Debug\Simulator.exe
+cd  ..\build
+cmake ..
+cmake --build . --target Simulator -j 14
+.\bin\Debug\Simulator.exe

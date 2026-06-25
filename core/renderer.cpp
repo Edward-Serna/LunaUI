@@ -46,12 +46,13 @@ namespace sim {
             return false;
         }
 
-
-        if (SDL_Surface* icon = IMG_Load("icon.png")) {
+        SDL_Surface* icon = IMG_Load("../icon.png");
+        if (!icon)  icon = IMG_Load("icon.png");
+        if (icon) {
             SDL_SetWindowIcon(window_, icon);
             SDL_DestroySurface(icon); // Clean up the surface after assigning
         } else {
-            // SDL_Log("Failed to load icon: %s", SDL_GetError());
+            console::error("RENDERER", "Failed to load icon: {}", SDL_GetError());
         }
 
         // Create OpenGL context
