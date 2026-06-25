@@ -29,7 +29,6 @@ endif()
 
 target_link_libraries(core PRIVATE SDL3_image::SDL3_image)
 
-
 # Link fmt
 target_link_libraries(core PUBLIC fmt::fmt)
 
@@ -47,3 +46,5 @@ endif()
 target_sources(core PRIVATE
     ${CMAKE_SOURCE_DIR}/thirdparty/glad/src/glad.c
 )
+
+file(COPY_FILE ${CMAKE_SOURCE_DIR}/resources/icon.png ${CMAKE_BINARY_DIR}/icon.png)
