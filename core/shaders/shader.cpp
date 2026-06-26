@@ -5,7 +5,6 @@
 #include "shader.h"
 #include "glad/glad.h"
 #include <fstream>
-#include <sstream>
 #include <utility/console.h>
 
 namespace sim {
@@ -77,23 +76,23 @@ namespace sim {
         glUniform1f(glGetUniformLocation(shader_ID, name.c_str()), value);
     }
 
-    void Shader::checkCompileErrors( const unsigned int shader, const std::string& type ) {
+    void Shader::checkCompileErrors( const unsigned int shader_id, const std::string& type ) {
         int success;
         char infoLog[1024];
         if (type != "PROGRAM") {
-            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
             if (!success) {
-                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                glGetShaderInfoLog(shader_id, 1024, nullptr, infoLog);
                 console::error("RENDERER", "ERROR::SHADER_COMPILATION_ERROR of type: {}", type);
-                console::error("RENDERER", "{}" ,infoLog);
+                console::error("RENDERER", "{}" , static_cast<std::string>(infoLog));
             }
         }
         else {
-            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+            glGetProgramiv(shader_id, GL_LINK_STATUS, &success);
             if (!success) {
-                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+                glGetProgramInfoLog(shader_id, 1024, nullptr, infoLog);
                 console::error("RENDERER", "ERROR::PROGRAM_LINKING_ERROR of type: {}", type);
-                console::error("RENDERER", "{}" ,infoLog);
+                console::error("RENDERER", "{}" ,static_cast<std::string>(infoLog));
             }
         }
     }

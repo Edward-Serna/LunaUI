@@ -40,9 +40,7 @@ int main() {
                 break;
 
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                if (evt.button.button == SDL_BUTTON_LEFT) renderer.reload(renderer);
-                // Pause auto-orbit while the user is dragging
-                // if (camera->orbit) camera->orbit->autoOrbit = false;
+                if (evt.button.button == SDL_BUTTON_LEFT) renderer.reload();
                 break;
 
             case SDL_EVENT_MOUSE_BUTTON_UP:

@@ -18,8 +18,8 @@ namespace sim {
         void setBool (const std::string &name, bool value) const;
         void setInt  (const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
-    private:
+    // private:
         // utility function for checking shader compilation/linking errors.
-        static void checkCompileErrors(unsigned int shader, const std::string& type);
+        static void checkCompileErrors(unsigned int shader_id, const std::string& type);
     };
 }

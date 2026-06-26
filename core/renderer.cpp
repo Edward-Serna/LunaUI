@@ -143,9 +143,13 @@ namespace sim {
         glViewport(0, 0, width, height);
     }
 
-    void Renderer::reload(Renderer &renderer) const {
+    void Renderer::reload(){
+        console::info("Renderer", "Reload Starting...");
         end();
-        renderer.init(width_, height_, title_);
+        if(init(width_, height_, title_))
+            console::info("Renderer", "Reload Complete");
+        else
+            console::error("Renderer", "Reload Failed");
     }
 
     void Renderer::end() const {
