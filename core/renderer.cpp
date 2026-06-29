@@ -143,8 +143,6 @@ namespace sim {
     void Renderer::checkShaderChange(){
         auto curr_last_write_vertex = std::filesystem::last_write_time(ShaderDirectory/ DefaultVertexShaderFile);
         auto curr_last_write_frag = std::filesystem::last_write_time(ShaderDirectory/ DefaultFragmentShaderFile);
-
-
         if (curr_last_write_frag != last_write_time_Fragment){
             console::warning("Renderer", "Fragment Shader Changed!");
             last_write_time_Fragment = curr_last_write_frag;
