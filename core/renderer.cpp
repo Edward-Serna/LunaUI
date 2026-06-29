@@ -10,6 +10,8 @@ namespace sim {
         const std::filesystem::path ShaderDirectory = RendererSourceDirectory / "shaders";
         constexpr std::string_view DefaultFragmentShaderFile = "default.shader.frag";
         constexpr std::string_view DefaultVertexShaderFile = "default.shader.vert";
+        std::chrono::time_point<std::filesystem::_File_time_clock> last_write_time_Fragment =  std::filesystem::last_write_time(ShaderDirectory/ DefaultFragmentShaderFile);
+        std::chrono::time_point<std::filesystem::_File_time_clock> last_write_time_Vertex =  std::filesystem::last_write_time(ShaderDirectory/ DefaultVertexShaderFile);
 
         std::string shaderPath( const std::string_view shaderFileName ) {
             return (ShaderDirectory / shaderFileName).string();
@@ -22,7 +24,7 @@ namespace sim {
 
         // SDL3: SDL_Init returns true (non-zero) on success.
         if (!SDL_Init(SDL_INIT_VIDEO)) {
-            console::error("RENDERER", "SDL_Init failed: {}", SDL_GetError());
+            console::error("Renderer", "SDL_Init failed: {}", SDL_GetError());
             return false;
         }
 
@@ -44,7 +46,7 @@ namespace sim {
         }
 
         if (!window_) {
-            console::error("RENDERER", "SDL_CreateWindow failed: {}", SDL_GetError());
+            console::error("Renderer", "SDL_CreateWindow failed: {}", SDL_GetError());
             return false;
         }
 
@@ -54,13 +56,13 @@ namespace sim {
             SDL_SetWindowIcon(window_, icon);
             SDL_DestroySurface(icon); // Clean up the surface after assigning
         } else {
-            console::error("RENDERER", "Failed to load icon: {}", SDL_GetError());
+            console::error("Renderer", "Failed to load icon: {}", SDL_GetError());
         }
 
         // Create OpenGL context
         glCtx_ = SDL_GL_CreateContext(window_);
         if (!glCtx_) {
-            console::error("RENDERER", "SDL_GL_CreateContext failed: {}", SDL_GetError());
+            console::error("Renderer", "SDL_GL_CreateContext failed: {}", SDL_GetError());
             return false;
         }
 
@@ -71,15 +73,15 @@ namespace sim {
 
         // Initialize GLAD immediately after context creation
         if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-            console::error("RENDERER", "Failed to initialize GLAD.");
+            console::error("Renderer", "Failed to initialize GLAD.");
             return false;
         }
 
         // Debug: Print OpenGL info
-        console::info("RENDERER", "OpenGL Version: {}", (char*)glGetString(GL_VERSION));
-        console::info("RENDERER", "GLSL Version: {}",  (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-        console::info("RENDERER", "Renderer: {}", (char*)glGetString(GL_RENDERER));
-        console::info("RENDERER", "Vendor: {}",(char*) glGetString(GL_VENDOR));
+        console::info("Renderer", "OpenGL Version: {}", (char*)glGetString(GL_VERSION));
+        console::info("Renderer", "GLSL Version: {}",  (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+        console::info("Renderer", "Renderer: {}", (char*)glGetString(GL_RENDERER));
+        console::info("Renderer", "Vendor: {}",(char*) glGetString(GL_VENDOR));
 
         // Enable depth testing
         glEnable(GL_DEPTH_TEST);
@@ -119,8 +121,8 @@ namespace sim {
         const std::string vertexShaderPath = shaderPath(DefaultVertexShaderFile);
         const std::string fragmentShaderPath = shaderPath(DefaultFragmentShaderFile);
 
-        console::info("RENDERER", "Loading vertex shader: {}", vertexShaderPath);
-        console::info("RENDERER", "Loading fragment shader: {}", fragmentShaderPath);
+        console::info("Renderer", "Loading vertex shader: {}", vertexShaderPath);
+        console::info("Renderer", "Loading fragment shader: {}", fragmentShaderPath);
 
         // Create Shader
         // (Emplace) Constructs the contained value in-place. If *this already contains a
@@ -129,7 +131,34 @@ namespace sim {
         return true;
     }
 
-    void Renderer::renderer() const{
+    void Renderer::reload(){
+        console::warning("Renderer", "Reload Starting...");
+        end();
+        if(init(width_, height_, title_))
+            console::success("Renderer", "Reload Complete");
+        else
+            console::error("Renderer", "Reload Failed");
+    }
+
+    void Renderer::checkShaderChange(){
+        auto curr_last_write_vertex = std::filesystem::last_write_time(ShaderDirectory/ DefaultVertexShaderFile);
+        auto curr_last_write_frag = std::filesystem::last_write_time(ShaderDirectory/ DefaultFragmentShaderFile);
+
+
+        if (curr_last_write_frag != last_write_time_Fragment){
+            console::warning("Renderer", "Fragment Shader Changed!");
+            last_write_time_Fragment = curr_last_write_frag;
+            reload();
+        }
+        if (curr_last_write_vertex != last_write_time_Vertex){
+            console::warning("Renderer", "Vertex Shader Changed!");
+            last_write_time_Vertex = curr_last_write_vertex;
+            reload();
+        }
+    }
+
+    void Renderer::renderer(){
+        checkShaderChange();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (ourShader) ourShader->use();
         glBindVertexArray(VAO_);
@@ -141,15 +170,6 @@ namespace sim {
         width_ = width;
         height_ = height;
         glViewport(0, 0, width, height);
-    }
-
-    void Renderer::reload(){
-        console::info("Renderer", "Reload Starting...");
-        end();
-        if(init(width_, height_, title_))
-            console::info("Renderer", "Reload Complete");
-        else
-            console::error("Renderer", "Reload Failed");
     }
 
     void Renderer::end() const {

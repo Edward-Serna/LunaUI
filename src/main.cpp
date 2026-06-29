@@ -4,12 +4,12 @@
 using namespace sim;
 
 int main() {
-    console::info("MAIN", "Initializing renderer...");
+    console::info("Main", "Initializing renderer...");
 
     Renderer renderer;
     if (!renderer.init(900, 700, "SDLSimulator"))
-        console::error("MAIN", "Failed to initialize renderer.");
-    console::success("MAIN", "Renderer initialized successfully.");
+        console::error("Main", "Failed to initialize renderer.");
+    console::success("Main", "Renderer initialized successfully.");
 
     //////////////// Event Loop ////////////////
     bool     running       = true;

@@ -55,7 +55,7 @@ namespace sim::console {
             break;
         case Level::Debug:
             fmt::print(fmt::fg(fmt::color::white_smoke) |
-                       fmt::bg(fmt::color::sea_green)," DEBUG ");
+                       fmt::bg(fmt::color::dark_magenta)," DEBUG ");
             break;
         }
         fmt::print(" ");
